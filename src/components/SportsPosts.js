@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
+import "./SportsPosts.css";
 
-function SportsPosts() {
+function SportsPosts({ searchQuery }) {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [visibleComments, setVisibleComments] = useState({});
 
   useEffect(() => {
     fetch("https://www.reddit.com/r/sports/.json")
@@ -24,57 +26,73 @@ function SportsPosts() {
       });
   }, []);
 
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error loading posts: {error.message}</p>;
+  if (loading) return <p className="loading">Loading...</p>;
+  if (error)
+    return <p className="error">Error loading posts: {error.message}</p>;
+
+  const filteredPosts = posts.filter((post) =>
+    post.data.title.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  if (filteredPosts.length === 0)
+    return <p>No posts found for "{searchQuery}".</p>;
+
+  const toggleComments = (id) => {
+    setVisibleComments((prevState) => ({
+      ...prevState,
+      [id]: !prevState[id],
+    }));
+  };
 
   return (
-    <div>
+    <div className="posts-container">
       <h1>Sports Posts</h1>
-      <ul>
-        {posts.map((post) => {
-          const postData = post.data;
-          const isImage =
-            postData.url &&
-            (postData.url.endsWith(".jpg") || postData.url.endsWith(".png"));
-          const isRedditPost = postData.url.startsWith(
-            "https://www.reddit.com/r/"
-          );
-
-          return (
-            <li key={postData.id}>
-              <h2>
-                <a
-                  href={`https://www.reddit.com${postData.permalink}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  {postData.title}
-                </a>
-              </h2>
-
-              {isImage && (
-                <div>
-                  <img
-                    src={postData.url}
-                    alt={postData.title}
-                    style={{ maxWidth: "100%", height: "auto" }}
-                  />
-                </div>
-              )}
-
-              {isRedditPost && (
-                <div>
-                  <iframe
-                    src={postData.url}
-                    title={postData.title}
-                    style={{ width: "100%", height: "500px", border: "none" }}
-                    allow="fullscreen"
-                  />
-                </div>
-              )}
-            </li>
-          );
-        })}
+      <ul className="posts-list">
+        {filteredPosts.map((post) => (
+          <li key={post.data.id} className="post-item">
+            <h3 className="post-title">
+              <a
+                href={`https://www.reddit.com${post.data.permalink}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {post.data.title}
+              </a>
+            </h3>
+            {post.data.url && (
+              <div className="post-image">
+                <img
+                  src={post.data.url}
+                  alt={post.data.title}
+                  className="image"
+                />
+              </div>
+            )}
+            <div className="post-icons">
+              <span
+                className="icon"
+                onClick={() => toggleComments(post.data.id)}
+                title="Comments"
+              >
+                🗨️ {post.data.num_comments}
+              </span>
+              <span className="icon" title="Likes">
+                👍 {post.data.ups}
+              </span>
+              <span className="icon" title="Shares">
+                🔗 {post.data.num_crossposts}
+              </span>
+            </div>
+            {visibleComments[post.data.id] && (
+              <div className="comments">
+                <p>
+                  Comments are currently unavailable due to Reddit API
+                  limitations.
+                </p>
+              </div>
+            )}
+          </li>
+        ))}
       </ul>
     </div>
   );

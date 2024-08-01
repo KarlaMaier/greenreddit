@@ -1,13 +1,16 @@
-// src/components/Header.js
+// In your Header component file, e.g., Header.js
 import React from "react";
-import "./Header.css"; // Import the CSS for the Header component
+import "./Header.css"; // Import the updated CSS
 
-function Header() {
+const Header = () => {
   return (
     <header className="header">
-      <h1>Green Reddit</h1>
+      <div className="header-title">Green Reddit</div>
+      <div className="header-search">
+        <input type="text" placeholder="Search..." />
+      </div>
     </header>
   );
-}
+};
 
 export default Header;

@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 
-function FoodAndDrinksPosts() {
+function FoodAndDrinksPosts({ searchQuery }) {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetch("https://www.reddit.com/r/food/.json") // Updated to use /r/food subreddit
+    fetch("https://www.reddit.com/r/food/.json")
       .then((response) => {
         if (!response.ok) {
           throw new Error("Network response was not ok");
@@ -27,18 +27,23 @@ function FoodAndDrinksPosts() {
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error loading posts: {error.message}</p>;
 
+  // Filter posts based on search query
+  const filteredPosts = posts.filter((post) =>
+    post.data.title.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  if (filteredPosts.length === 0)
+    return <p>No posts found for "{searchQuery}".</p>;
+
   return (
     <div>
       <h1>Food and Drinks Posts</h1>
       <ul>
-        {posts.map((post) => {
+        {filteredPosts.map((post) => {
           const postData = post.data;
           const isImage =
             postData.url &&
             (postData.url.endsWith(".jpg") || postData.url.endsWith(".png"));
-          const isRedditPost = postData.url.startsWith(
-            "https://www.reddit.com/r/"
-          );
 
           return (
             <li key={postData.id}>
@@ -58,17 +63,6 @@ function FoodAndDrinksPosts() {
                     src={postData.url}
                     alt={postData.title}
                     style={{ maxWidth: "100%", height: "auto" }}
-                  />
-                </div>
-              )}
-
-              {isRedditPost && (
-                <div>
-                  <iframe
-                    src={postData.url}
-                    title={postData.title}
-                    style={{ width: "100%", height: "500px", border: "none" }}
-                    allow="fullscreen"
                   />
                 </div>
               )}

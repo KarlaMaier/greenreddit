@@ -8,6 +8,13 @@ body {
   font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
   background: #bbe4e9;
   color: #142d4c;
+  margin-top: 80px; /* Adjust for header height */
+}
+
+.content {
+  margin-left: 220px; /* Adjust for sidebar width */
+  padding: 20px; /* Adjust for spacing around the content */
+  padding-top: 20px; /* Additional padding to prevent overlap with header */
 }
 
 .subreddits {
@@ -17,6 +24,7 @@ body {
   margin: 5rem auto;
   display: grid;
   gap: 2rem;
+  padding-top: 20px; /* Additional padding if needed */
 }
 
 .h1 {
@@ -26,5 +34,11 @@ body {
 @media screen and (min-width: 768px) {
   .subreddits {
     grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .subreddits {
+    grid-template-columns: 1fr;
   }
 }

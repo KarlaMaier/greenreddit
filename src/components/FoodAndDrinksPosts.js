@@ -1,74 +1,85 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
+import "./FoodAndDrinksPosts.css";
 
 function FoodAndDrinksPosts({ searchQuery }) {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [cache, setCache] = useState({});
 
-  useEffect(() => {
-    fetch("https://www.reddit.com/r/food/.json")
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-        return response.json();
-      })
-      .then((data) => {
-        setPosts(data.data.children);
+  // Fetch data function with caching
+  const fetchData = useCallback(
+    async (query) => {
+      const cacheKey = `food-${query}`;
+      if (cache[cacheKey]) {
+        setPosts(cache[cacheKey]);
         setLoading(false);
-      })
-      .catch((error) => {
+        return;
+      }
+
+      try {
+        const response = await fetch("https://www.reddit.com/r/food/.json");
+        if (!response.ok) throw new Error("Network response was not ok");
+
+        const data = await response.json();
+        const filteredPosts = data.data.children.filter((post) =>
+          post.data.title.toLowerCase().includes(query.toLowerCase())
+        );
+
+        setPosts(filteredPosts);
+        setCache((prevCache) => ({ ...prevCache, [cacheKey]: filteredPosts }));
+        setLoading(false);
+      } catch (error) {
         console.error("Fetch error:", error);
         setError(error);
         setLoading(false);
-      });
-  }, []);
-
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error loading posts: {error.message}</p>;
-
-  // Filter posts based on search query
-  const filteredPosts = posts.filter((post) =>
-    post.data.title.toLowerCase().includes(searchQuery.toLowerCase())
+      }
+    },
+    [cache]
   );
 
-  if (filteredPosts.length === 0)
-    return <p>No posts found for "{searchQuery}".</p>;
+  // Debounce search query
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      fetchData(searchQuery);
+    }, 500); // Debounce delay
+
+    return () => clearTimeout(handler);
+  }, [searchQuery, fetchData]);
+
+  if (loading) return <p className="loading">Loading...</p>;
+  if (error)
+    return <p className="error">Error loading posts: {error.message}</p>;
+
+  if (posts.length === 0)
+    return <p className="no-posts">No posts found for "{searchQuery}".</p>;
 
   return (
-    <div>
+    <div className="posts-container">
       <h1>Food and Drinks Posts</h1>
-      <ul>
-        {filteredPosts.map((post) => {
-          const postData = post.data;
-          const isImage =
-            postData.url &&
-            (postData.url.endsWith(".jpg") || postData.url.endsWith(".png"));
-
-          return (
-            <li key={postData.id}>
-              <h2>
-                <a
-                  href={`https://www.reddit.com${postData.permalink}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  {postData.title}
-                </a>
-              </h2>
-
-              {isImage && (
-                <div>
-                  <img
-                    src={postData.url}
-                    alt={postData.title}
-                    style={{ maxWidth: "100%", height: "auto" }}
-                  />
-                </div>
-              )}
-            </li>
-          );
-        })}
+      <ul className="posts-list">
+        {posts.map((post) => (
+          <li key={post.data.id} className="post-item">
+            <h3 className="post-title">
+              <a
+                href={`https://www.reddit.com${post.data.permalink}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {post.data.title}
+              </a>
+            </h3>
+            {post.data.url && (
+              <div className="post-image">
+                <img
+                  src={post.data.url}
+                  alt={post.data.title}
+                  className="image"
+                />
+              </div>
+            )}
+          </li>
+        ))}
       </ul>
     </div>
   );

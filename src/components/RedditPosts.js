@@ -1,92 +1,118 @@
-// src/components/RedditPosts.js
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
+import "./RedditPosts.css";
 
 const RedditPosts = ({ subreddit, searchQuery }) => {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [cache, setCache] = useState({});
+  const [visibleComments, setVisibleComments] = useState({});
 
-  useEffect(() => {
-    fetch(`https://www.reddit.com/r/${subreddit}.json`)
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-        return response.json();
-      })
-      .then((data) => {
-        // Temporarily set all posts to see if data is fetched
-        setPosts(data.data.children);
+  // Fetch data function with caching
+  const fetchData = useCallback(
+    async (subreddit, query) => {
+      const cacheKey = `reddit-${subreddit}-${query}`;
+      if (cache[cacheKey]) {
+        setPosts(cache[cacheKey]);
         setLoading(false);
-      })
-      .catch((error) => {
+        return;
+      }
+
+      try {
+        const response = await fetch(
+          `https://www.reddit.com/r/${subreddit}.json`
+        );
+        if (!response.ok) throw new Error("Network response was not ok");
+
+        const data = await response.json();
+        const filteredPosts = data.data.children.filter((post) =>
+          post.data.title.toLowerCase().includes(query.toLowerCase())
+        );
+
+        setPosts(filteredPosts);
+        setCache((prevCache) => ({ ...prevCache, [cacheKey]: filteredPosts }));
+        setLoading(false);
+      } catch (error) {
         console.error("Fetch error:", error);
         setError(error);
         setLoading(false);
-      });
-  }, [subreddit]);
-
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error loading posts: {error.message}</p>;
-
-  // If no posts, return early
-  if (posts.length === 0) return <p>No posts available.</p>;
-
-  // Filter posts based on search query
-  const filteredPosts = posts.filter((post) =>
-    post.data.title.toLowerCase().includes(searchQuery.toLowerCase())
+      }
+    },
+    [cache]
   );
 
-  if (filteredPosts.length === 0)
-    return <p>No posts found for "{searchQuery}".</p>;
+  // Debounce search query and subreddit
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      fetchData(subreddit, searchQuery);
+    }, 500); // Debounce delay
+
+    return () => clearTimeout(handler);
+  }, [subreddit, searchQuery, fetchData]);
+
+  const toggleComments = (id) => {
+    setVisibleComments((prevState) => ({
+      ...prevState,
+      [id]: !prevState[id],
+    }));
+  };
+
+  if (loading) return <p className="loading">Loading...</p>;
+  if (error)
+    return <p className="error">Error loading posts: {error.message}</p>;
+
+  if (posts.length === 0)
+    return <p className="no-posts">No posts found for "{searchQuery}".</p>;
 
   return (
-    <div>
-      <ul>
-        {filteredPosts.map((post) => {
-          const postData = post.data;
-          const isImage =
-            postData.url &&
-            (postData.url.endsWith(".jpg") || postData.url.endsWith(".png"));
-          const isRedditPost = postData.url.startsWith(
-            "https://www.reddit.com/r/"
-          );
-
-          return (
-            <li key={postData.id}>
-              <h2>
-                <a
-                  href={`https://www.reddit.com${postData.permalink}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  {postData.title}
-                </a>
-              </h2>
-
-              {isImage && (
-                <div>
-                  <img
-                    src={postData.url}
-                    alt={postData.title}
-                    style={{ maxWidth: "100%", height: "auto" }}
-                  />
-                </div>
-              )}
-
-              {isRedditPost && (
-                <div>
-                  <iframe
-                    src={postData.url}
-                    title={postData.title}
-                    style={{ width: "100%", height: "500px", border: "none" }}
-                    allow="fullscreen"
-                  />
-                </div>
-              )}
-            </li>
-          );
-        })}
+    <div className="posts-container">
+      <h1>{subreddit.charAt(0).toUpperCase() + subreddit.slice(1)} Posts</h1>
+      <ul className="posts-list">
+        {posts.map((post) => (
+          <li key={post.data.id} className="post-item">
+            <h3 className="post-title">
+              <a
+                href={`https://www.reddit.com${post.data.permalink}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {post.data.title}
+              </a>
+            </h3>
+            {post.data.url && (
+              <div className="post-image">
+                <img
+                  src={post.data.url}
+                  alt={post.data.title}
+                  className="image"
+                />
+              </div>
+            )}
+            <div className="post-icons">
+              <span
+                className="icon"
+                onClick={() => toggleComments(post.data.id)}
+                title="Comments"
+              >
+                🗨️ {post.data.num_comments}
+              </span>
+              <span className="icon" title="Likes">
+                👍 {post.data.ups}
+              </span>
+              <span className="icon" title="Shares">
+                🔗 {post.data.num_crossposts}
+              </span>
+            </div>
+            {visibleComments[post.data.id] && (
+              <div className="comments">
+                <p>
+                  Comments are currently unavailable due to Reddit API
+                  limitations.
+                </p>
+              </div>
+            )}
+          </li>
+        ))}
       </ul>
     </div>
   );

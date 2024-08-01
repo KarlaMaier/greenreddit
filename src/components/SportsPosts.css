@@ -1,0 +1,75 @@
+.posts-container {
+  margin: 20px; /* Adjust spacing around the container */
+}
+
+.posts-list {
+  list-style: none; /* Removes default list styling */
+  padding: 0; /* Removes default padding */
+}
+
+.post-item {
+  padding: 10px; /* Adds space inside the container */
+  border: 1px solid #ccc; /* Optional: adds a border around the container */
+  border-radius: 8px; /* Optional: adds rounded corners */
+  background-color: #f9f9f9; /* Optional: sets a background color */
+  margin-bottom: 20px; /* Adds spacing below each post */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Optional: adds a subtle shadow */
+  position: relative; /* For positioning icons */
+}
+
+.post-title {
+  color: #142d4c; /* Sets the color of the title */
+  margin: 0; /* Removes default margin */
+}
+
+.post-title a {
+  color: #142d4c; /* Sets the link color */
+  text-decoration: none; /* Removes default underline */
+}
+
+.post-title a:hover {
+  text-decoration: underline; /* Adds underline on hover */
+}
+
+.post-image {
+  max-width: 100%; /* Ensures the image does not exceed the container width */
+  margin-top: 10px; /* Adds space above the image */
+}
+
+.image {
+  width: 100%; /* Makes the image width responsive */
+  height: auto; /* Maintains the aspect ratio */
+  border-radius: 4px; /* Optional: adds rounded corners to the image */
+}
+
+.loading {
+  color: #142d4c; /* Consistent with the rest of the styling */
+  text-align: center;
+  padding: 20px;
+}
+
+.error {
+  color: #e74c3c; /* Color for error messages */
+  text-align: center;
+  padding: 20px;
+}
+
+.post-icons {
+  display: flex;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.icon {
+  margin-right: 10px;
+  cursor: pointer;
+}
+
+.comments {
+  display: none; /* Initially hidden */
+  margin-top: 10px;
+}
+
+.comments.visible {
+  display: block; /* Show comments when visible class is added */
+}

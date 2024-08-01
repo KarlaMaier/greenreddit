@@ -1,14 +1,57 @@
-/* src/components/Header.css */
 .header {
-  background-color: #35bcbf; 
-  color: white; 
-  padding: 20px; 
-  text-align: center; 
-  font-size: 24px; 
-  position: fixed; /* Fix position at the top */
-  width: 100%; /* Full width */
-  top: 0; /* Align with the top of the viewport */
-  left: 0; /* Align with the left of the viewport */
-  z-index: 1000; /* Ensure the header is above other elements */
-  box-shadow: 0 2px 5px rgba(0,0,0,0.2); /* Optional: add shadow for better visibility */
+  background-color: #35bcbf;
+  color: white;
+  padding: 20px;
+  font-size: 24px;
+  position: fixed;
+  width: 100%;
+  top: 0;
+  left: 0;
+  z-index: 1000; /* Ensure it stays on top */
+  display: flex; /* Use flexbox for alignment */
+  align-items: center; /* Center align items vertically */
+  justify-content: space-between; /* Space out items */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Optional: Add shadow for better visibility */
+}
+
+.header-title {
+  flex: 1; /* Allow title to take up remaining space */
+  text-align: center; /* Center title text */
+}
+
+.header-search {
+  width: 200px; /* Fixed width for search bar */
+}
+
+.header-search input {
+  padding: 8px;
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
+  width: 100%; /* Full width of the container */
+}
+
+@media screen and (max-width: 768px) {
+  .header {
+    font-size: 20px;
+    padding: 15px;
+    flex-direction: column; /* Stack elements vertically on small screens */
+    align-items: flex-start; /* Align items to the start (left) */
+  }
+
+  .header-title {
+    text-align: center; /* Center title text on small screens */
+    width: 100%; /* Full width title */
+    margin-bottom: 10px; /* Space between title and search bar */
+  }
+
+  .header-search {
+    width: 100%; /* Full width search bar on small screens */
+    text-align: left; /* Align search bar to the left */
+    margin-left: 0; /* Remove margin on small screens */
+  }
+
+  .header-search input {
+    width: 100%; /* Full width input on small screens */
+  }
 }

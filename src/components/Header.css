@@ -1,0 +1,14 @@
+/* src/components/Header.css */
+.header {
+  background-color: #35bcbf; 
+  color: white; 
+  padding: 20px; 
+  text-align: center; 
+  font-size: 24px; 
+  position: fixed; /* Fix position at the top */
+  width: 100%; /* Full width */
+  top: 0; /* Align with the top of the viewport */
+  left: 0; /* Align with the left of the viewport */
+  z-index: 1000; /* Ensure the header is above other elements */
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2); /* Optional: add shadow for better visibility */
+}

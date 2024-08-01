@@ -1,25 +1,39 @@
+// src/App.js
 import React, { useState } from "react";
+import Header from "./components/Header";
 import RedditPosts from "./components/RedditPosts";
 import FoodAndDrinksPosts from "./components/FoodAndDrinksPosts";
-import Sidebar from "./components/Sidebar";
+import SportsPosts from "./components/SportsPosts";
+import "./components/Sidebar.css"; // Import the sidebar styles
+import "./index.css"; // Import the general styles
 
 function App() {
-  const [selectedFeed, setSelectedFeed] = useState("popular");
+  const [selectedSubreddit, setSelectedSubreddit] = useState("popular");
 
-  const handleSelectFeed = (feed) => {
-    setSelectedFeed(feed);
+  const renderContent = () => {
+    switch (selectedSubreddit) {
+      case "popular":
+        return <RedditPosts subreddit="popular" />;
+      case "food":
+        return <FoodAndDrinksPosts />;
+      case "sports":
+        return <SportsPosts />;
+      default:
+        return <RedditPosts subreddit="popular" />;
+    }
   };
 
   return (
-    <div style={{ display: "flex" }}>
-      <Sidebar onSelectFeed={handleSelectFeed} />
-      <div style={{ flex: 1, padding: "20px" }}>
-        {selectedFeed === "popular" ? (
-          <RedditPosts subreddit="popular" />
-        ) : (
-          <FoodAndDrinksPosts />
-        )}
-      </div>
+    <div className="app">
+      <Header />
+      <main className="content">{renderContent()}</main>
+      <aside className="sidebar">
+        <button onClick={() => setSelectedSubreddit("popular")}>Popular</button>
+        <button onClick={() => setSelectedSubreddit("food")}>
+          Food & Drinks
+        </button>
+        <button onClick={() => setSelectedSubreddit("sports")}>Sports</button>
+      </aside>
     </div>
   );
 }

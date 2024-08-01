@@ -1,8 +1,13 @@
+/* src/components/Sidebar.css */
 .sidebar {
   width: 200px;
   padding: 20px;
   background-color: #f4f4f4;
-  border-right: 1px solid #ddd;
+  border-left: 1px solid #ddd;
+  height: calc(100vh - 80px); /* Adjust for the header height plus some extra margin */
+  position: fixed; /* Fix position to the right */
+  right: 0;
+  top: 95px; /* Adjusted to be below the header */
 }
 
 .sidebar button {
@@ -19,4 +24,10 @@
 
 .sidebar button:hover {
   background-color: #2a9d8f;
+}
+
+.content {
+  margin-right: 220px; /* Make room for the sidebar */
+  padding: 20px;
+  margin-top: 80px; /* Align with the bottom of the header */
 }

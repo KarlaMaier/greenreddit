@@ -1,0 +1,31 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body{
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    background: #bbe4e9;
+    color: #142d4c;
+}
+
+
+.subreddits{
+    color: #142d4c;
+    width: 90vw;
+    max-width: 1170px;
+    margin: 5rem auto;
+    display: grid;
+    gap: 2rem;
+}
+
+.h1{
+    color: #38598b;
+}
+
+@media screen and (min-width: 768px){
+    .subreddits{
+        grid-template-columns: repeat(2, 1fr);
+    }
+}

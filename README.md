@@ -31,4 +31,4 @@ To get a copy of the project up and running on your local machine, follow these 
 
 1. **Clone the Repository:**
    ```sh
-   git clone https://github.com/your-username/reddit-application.git
+   https://github.com/KarlaMaier/greenreddit/tree/main

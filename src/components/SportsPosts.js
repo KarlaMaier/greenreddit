@@ -1,41 +1,59 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import "./SportsPosts.css";
 
 function SportsPosts({ searchQuery }) {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [cache, setCache] = useState({});
   const [visibleComments, setVisibleComments] = useState({});
 
-  useEffect(() => {
-    fetch("https://www.reddit.com/r/sports/.json")
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-        return response.json();
-      })
-      .then((data) => {
-        setPosts(data.data.children);
+  // Fetch data function with caching
+  const fetchData = useCallback(
+    async (query) => {
+      const cacheKey = `sports-${query.toLowerCase()}`;
+      if (cache[cacheKey]) {
+        setPosts(cache[cacheKey]);
         setLoading(false);
-      })
-      .catch((error) => {
+        return;
+      }
+
+      try {
+        const response = await fetch("https://www.reddit.com/r/sports.json");
+        if (!response.ok) throw new Error("Network response was not ok");
+
+        const data = await response.json();
+        const filteredPosts = data.data.children.filter((post) =>
+          post.data.title.toLowerCase().includes(query.toLowerCase())
+        );
+
+        setPosts(filteredPosts);
+        setCache((prevCache) => ({ ...prevCache, [cacheKey]: filteredPosts }));
+        setLoading(false);
+      } catch (error) {
         console.error("Fetch error:", error);
         setError(error);
         setLoading(false);
-      });
-  }, []);
+      }
+    },
+    [cache]
+  );
+
+  // Debounce search query
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      fetchData(searchQuery);
+    }, 500); // Debounce delay
+
+    return () => clearTimeout(handler);
+  }, [searchQuery, fetchData]);
 
   if (loading) return <p className="loading">Loading...</p>;
   if (error)
     return <p className="error">Error loading posts: {error.message}</p>;
 
-  const filteredPosts = posts.filter((post) =>
-    post.data.title.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
-  if (filteredPosts.length === 0)
-    return <p>No posts found for "{searchQuery}".</p>;
+  if (posts.length === 0)
+    return <p className="no-posts">No posts found for "{searchQuery}".</p>;
 
   const toggleComments = (id) => {
     setVisibleComments((prevState) => ({
@@ -48,7 +66,7 @@ function SportsPosts({ searchQuery }) {
     <div className="posts-container">
       <h1>Sports Posts</h1>
       <ul className="posts-list">
-        {filteredPosts.map((post) => (
+        {posts.map((post) => (
           <li key={post.data.id} className="post-item">
             <h3 className="post-title">
               <a

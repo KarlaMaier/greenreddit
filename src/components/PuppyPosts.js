@@ -10,7 +10,7 @@ function PuppyPosts({ searchQuery }) {
   // Fetch data function with caching
   const fetchData = useCallback(
     async (query) => {
-      const cacheKey = `puppy-${query}`;
+      const cacheKey = `puppy-${query.toLowerCase()}`;
       if (cache[cacheKey]) {
         setPosts(cache[cacheKey]);
         setLoading(false);

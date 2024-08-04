@@ -8,7 +8,6 @@ const RedditPosts = ({ subreddit, searchQuery }) => {
   const [cache, setCache] = useState({});
   const [visibleComments, setVisibleComments] = useState({});
 
-  // Fetch data function with caching
   const fetchData = useCallback(
     async (subreddit, query) => {
       const cacheKey = `reddit-${subreddit}-${query}`;
@@ -41,7 +40,6 @@ const RedditPosts = ({ subreddit, searchQuery }) => {
     [cache]
   );
 
-  // Debounce search query and subreddit
   useEffect(() => {
     const handler = setTimeout(() => {
       fetchData(subreddit, searchQuery);

@@ -6,6 +6,7 @@ function PuppyPosts({ searchQuery }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [cache, setCache] = useState({});
+  const [visibleComments, setVisibleComments] = useState({});
 
   // Fetch data function with caching
   const fetchData = useCallback(
@@ -47,6 +48,13 @@ function PuppyPosts({ searchQuery }) {
     return () => clearTimeout(handler);
   }, [searchQuery, fetchData]);
 
+  const toggleComments = (id) => {
+    setVisibleComments((prevState) => ({
+      ...prevState,
+      [id]: !prevState[id],
+    }));
+  };
+
   if (loading) return <p className="loading">Loading...</p>;
   if (error)
     return <p className="error">Error loading posts: {error.message}</p>;
@@ -76,6 +84,26 @@ function PuppyPosts({ searchQuery }) {
                   alt={post.data.title}
                   className="image"
                 />
+              </div>
+            )}
+            <div className="post-icons">
+              <span
+                className="icon"
+                onClick={() => toggleComments(post.data.id)}
+                title="Comments"
+              >
+                🗨️ {post.data.num_comments}
+              </span>
+              <span className="icon" title="Likes">
+                👍 {post.data.ups}
+              </span>
+            </div>
+            {visibleComments[post.data.id] && (
+              <div className="comments">
+                <p>
+                  Comments are currently unavailable due to Reddit API
+                  limitations.
+                </p>
               </div>
             )}
           </li>

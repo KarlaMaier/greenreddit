@@ -43,7 +43,7 @@ const RedditPosts = ({ subreddit, searchQuery }) => {
   useEffect(() => {
     const handler = setTimeout(() => {
       fetchData(subreddit, searchQuery);
-    }, 500); // Debounce delay
+    }, 500);
 
     return () => clearTimeout(handler);
   }, [subreddit, searchQuery, fetchData]);

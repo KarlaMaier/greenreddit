@@ -48,19 +48,19 @@ function SportsPosts({ searchQuery }) {
     return () => clearTimeout(handler);
   }, [searchQuery, fetchData]);
 
-  if (loading) return <p className="loading">Loading...</p>;
-  if (error)
-    return <p className="error">Error loading posts: {error.message}</p>;
-
-  if (posts.length === 0)
-    return <p className="no-posts">No posts found for "{searchQuery}".</p>;
-
   const toggleComments = (id) => {
     setVisibleComments((prevState) => ({
       ...prevState,
       [id]: !prevState[id],
     }));
   };
+
+  if (loading) return <p className="loading">Loading...</p>;
+  if (error)
+    return <p className="error">Error loading posts: {error.message}</p>;
+
+  if (posts.length === 0)
+    return <p className="no-posts">No posts found for "{searchQuery}".</p>;
 
   return (
     <div className="posts-container">

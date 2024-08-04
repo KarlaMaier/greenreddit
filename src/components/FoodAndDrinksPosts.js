@@ -10,7 +10,7 @@ function FoodAndDrinksPosts({ searchQuery }) {
   // Fetch data function with caching
   const fetchData = useCallback(
     async (query) => {
-      const cacheKey = `food-${query}`;
+      const cacheKey = `food-${query.toLowerCase()}`;
       if (cache[cacheKey]) {
         setPosts(cache[cacheKey]);
         setLoading(false);

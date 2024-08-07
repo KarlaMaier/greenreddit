@@ -1,10 +1,10 @@
 {
   "files": {
-    "main.css": "/KarlaMaier/greenreddit/static/css/main.4777c9d6.css",
-    "main.js": "/KarlaMaier/greenreddit/static/js/main.39a9e00e.js",
-    "index.html": "/KarlaMaier/greenreddit/index.html",
-    "main.4777c9d6.css.map": "/KarlaMaier/greenreddit/static/css/main.4777c9d6.css.map",
-    "main.39a9e00e.js.map": "/KarlaMaier/greenreddit/static/js/main.39a9e00e.js.map"
+    "main.css": "/greenreddit/static/css/main.4777c9d6.css",
+    "main.js": "/greenreddit/static/js/main.39a9e00e.js",
+    "index.html": "/greenreddit/index.html",
+    "main.4777c9d6.css.map": "/greenreddit/static/css/main.4777c9d6.css.map",
+    "main.39a9e00e.js.map": "/greenreddit/static/js/main.39a9e00e.js.map"
   },
   "entrypoints": [
     "static/css/main.4777c9d6.css",
